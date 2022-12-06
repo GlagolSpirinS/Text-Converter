@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-    internal class Alcohol
+    public class Alcohol
     {
         public string Name;
         public int Price;

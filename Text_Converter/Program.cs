@@ -22,6 +22,8 @@ namespace ConsoleApp1
             Console.WriteLine("Введите путь к файлу");
             jopa0 = Console.ReadLine();
             jopa1 = File.ReadAllLines(jopa0);
+            Console.Clear();
+            Console.WriteLine("Чтобы сохранить файл нажмите на F1");
             min = Console.CursorTop;
 
             foreach (var item in jopa1)
@@ -75,33 +77,39 @@ namespace ConsoleApp1
                                 string path = Console.ReadLine();
                                 string[] paths = path.Split(".");
                                 string extension = paths[1];
-                                if (extension == "txt")
+                                if (extension == "json")
                                 {
-
-                                }
-                                else if (extension == "json")
-                                {
-                                    List<Alcohol> ListObject = new List<Alcohol>();
-                                    Alcohol Object = new Alcohol();
-                                    foreach (var item in jopa1)
-                                    {
-                                        if (!int.TryParse(item, out int number)) Object.Name = item;
-                                        else
-                                        {
-                                            Object.Price = Convert.ToInt32(item);
-                                            ListObject.Add(Object);
-                                            Object = new Alcohol();
-                                        }
-                                    }
+                                    /*                                    List<Alcohol> ListObject = new List<Alcohol>();
+                                                                        Alcohol Object = new Alcohol();
+                                                                        foreach (var item in jopa1)
+                                                                        {
+                                                                            if (!int.TryParse(item, out int number)) Object.Name = item;
+                                                                            else
+                                                                            {
+                                                                                Object.Price = Convert.ToInt32(item);
+                                                                                ListObject.Add(Object);
+                                                                                Object = new Alcohol();
+                                                                            }
+                                                                        }*/
+                                    List<Alcohol> ListObject = MakeListFromJopa();
                                     using StreamWriter sw = File.CreateText(path);
                                     sw.WriteLine(JsonConvert.SerializeObject(ListObject));
                                 }
                                 else if (extension == "xml")
                                 {
-                                    XmlSerializer xml = new XmlSerializer(typeof(Alcohol));
-                                    using StreamWriter xm = File.CreateText(path);
+                                    List<Alcohol> ListObject = MakeListFromJopa();
+                                    XmlSerializer xml = new XmlSerializer(ListObject.GetType());
+                                    using FileStream fs = new FileStream(path, FileMode.OpenOrCreate);
+                                    xml.Serialize(fs, ListObject);
+                                    fs.Dispose();
+
+
+                                    /*                                    List<Alcohol> ListObject = MakeListFromJopa();
+                                                                        XmlSerializer xml = new XmlSerializer(typeof(Alcohol));
+                                                                        using StreamWriter xm = File.CreateText(path);
+                                                                        xm.WriteLine(XmlConvert.SerializeObject(ListObject));*/
                                 }
-                                break;
+                                break;  
                             default:
                                 MakeListToString(pos, pis, key);
                                 pis++;
@@ -112,6 +120,23 @@ namespace ConsoleApp1
                     }
                 }
                 return pos;
+            }
+
+            static List<Alcohol> MakeListFromJopa()
+            {
+                List<Alcohol> ListObject = new List<Alcohol>();
+                Alcohol Object = new Alcohol();
+                foreach (var item in jopa1)
+                {
+                    if (!int.TryParse(item, out int number)) Object.Name = item; 
+                    else 
+                    { 
+                        Object.Price = Convert.ToInt32(item);
+                        ListObject.Add(Object);
+                        Object= new Alcohol();
+                    }
+                }
+                return ListObject;
             }
 
             static void MakeListToString(int a, int b, ConsoleKeyInfo key)
